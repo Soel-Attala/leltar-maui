@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  Új termék felvétele  -->
+<ContentPage
+    x:Class="Leltar.Views.AddProductPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Leltar.Controls"
+    xmlns:vm="clr-namespace:Leltar.Core.ViewModels;assembly=Leltar.Core"
+    Title="{Binding Title}"
+    x:DataType="vm:AddProductViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout
+            MaximumWidthRequest="600"
+            Padding="16"
+            Spacing="16">
+            <controls:ProductFormView />
+
+            <!-- Mentés -->
+            <Button Command="{Binding SaveCommand}" Text="Save" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

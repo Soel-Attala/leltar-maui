@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  Termék űrlap – közös a felvétel és a módosítás oldalon  -->
+<ContentView
+    x:Class="Leltar.Controls.ProductFormView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Leltar.Core.ViewModels;assembly=Leltar.Core"
+    x:DataType="vm:ProductFormViewModel">
+
+    <ContentView.Resources>
+        <Style x:Key="FieldLabel" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+        <Style x:Key="ErrorLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OutOfStockLight}, Dark={StaticResource OutOfStockDark}}" />
+        </Style>
+    </ContentView.Resources>
+
+    <VerticalStackLayout Spacing="4">
+
+        <!-- Név -->
+        <Label Style="{StaticResource FieldLabel}" Text="Name" />
+        <Entry
+            MaxLength="200"
+            Placeholder="e.g. Milk 1 l"
+            ReturnType="Next"
+            Text="{Binding Name}" />
+        <Label
+            IsVisible="{Binding NameError, Converter={StaticResource IsNotNullConverter}}"
+            Style="{StaticResource ErrorLabel}"
+            Text="{Binding NameError}" />
+
+        <!-- Vonalkód -->
+        <Label Style="{StaticResource FieldLabel}" Text="Barcode" />
+        <Entry
+            MaxLength="64"
+            Placeholder="e.g. 5991234567890"
+            ReturnType="Next"
+            Text="{Binding Barcode}" />
+        <Label
+            IsVisible="{Binding BarcodeError, Converter={StaticResource IsNotNullConverter}}"
+            Style="{StaticResource ErrorLabel}"
+            Text="{Binding BarcodeError}" />
+
+        <!-- Ár -->
+        <Label Style="{StaticResource FieldLabel}" Text="Price" />
+        <Entry
+            Keyboard="Numeric"
+            Placeholder="0"
+            ReturnType="Next"
+            Text="{Binding PriceText}" />
+        <Label
+            IsVisible="{Binding PriceError, Converter={StaticResource IsNotNullConverter}}"
+            Style="{StaticResource ErrorLabel}"
+            Text="{Binding PriceError}" />
+
+        <!-- Készletmennyiség -->
+        <Label Style="{StaticResource FieldLabel}" Text="Quantity in stock" />
+        <Entry
+            Keyboard="Numeric"
+            Placeholder="0"
+            ReturnCommand="{Binding SaveCommand}"
+            ReturnType="Done"
+            Text="{Binding QuantityText}" />
+        <Label
+            IsVisible="{Binding QuantityError, Converter={StaticResource IsNotNullConverter}}"
+            Style="{StaticResource ErrorLabel}"
+            Text="{Binding QuantityError}" />
+    </VerticalStackLayout>
+</ContentView>

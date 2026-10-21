@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  Termék részletező oldal (módosítás, törlés)  -->
+<ContentPage
+    x:Class="Leltar.Views.ProductDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Leltar.Controls"
+    xmlns:vm="clr-namespace:Leltar.Core.ViewModels;assembly=Leltar.Core"
+    Title="{Binding Title}"
+    x:DataType="vm:ProductDetailViewModel">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout
+                MaximumWidthRequest="600"
+                Padding="16"
+                Spacing="16">
+
+                <!-- Fejléc: mentett név és készletállapot -->
+                <VerticalStackLayout Spacing="2">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        Text="{Binding Product.Name}" />
+                    <Label FontSize="14" Text="{Binding Product.Quantity, StringFormat='In stock: {0:0.###}'}">
+                        <Label.Triggers>
+                            <!-- Elfogyott -->
+                            <DataTrigger
+                                Binding="{Binding Product.IsOutOfStock}"
+                                TargetType="Label"
+                                Value="True">
+                                <Setter Property="Text" Value="Out of stock" />
+                                <Setter Property="FontAttributes" Value="Bold" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OutOfStockLight}, Dark={StaticResource OutOfStockDark}}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </VerticalStackLayout>
+
+                <controls:ProductFormView />
+
+                <!-- Mentés -->
+                <Button Command="{Binding SaveCommand}" Text="Save changes" />
+
+                <!-- Törlés -->
+                <Button
+                    BackgroundColor="Transparent"
+                    BorderColor="{AppThemeBinding Light={StaticResource OutOfStockLight}, Dark={StaticResource OutOfStockDark}}"
+                    BorderWidth="1"
+                    Command="{Binding DeleteCommand}"
+                    Text="Delete product"
+                    TextColor="{AppThemeBinding Light={StaticResource OutOfStockLight}, Dark={StaticResource OutOfStockDark}}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Betöltés jelző -->
+        <ActivityIndicator
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Leltar.Core/Leltar.Core.csproj" />
+    <Project Path="src/Leltar/Leltar.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Leltar.Tests/Leltar.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Leltar.Views.ProductListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Leltar.Core.Models;assembly=Leltar.Core"
+    xmlns:vm="clr-namespace:Leltar.Core.ViewModels;assembly=Leltar.Core"
+    Title="Inventory"
+    x:DataType="vm:ProductListViewModel">
+
+    <!-- Eszköztár: új termék, demo adatok -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding AddProductCommand}" Text="+ New product" />
+        <ToolbarItem
+            Command="{Binding GenerateDemoDataCommand}"
+            Order="Secondary"
+            Text="Load demo data" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Keresés név vagy vonalkód alapján -->
+        <SearchBar
+            Margin="8,8,8,0"
+            Placeholder="Search by name or barcode"
+            Text="{Binding SearchText}" />
+
+        <!-- Találatok száma -->
+        <Label
+            Grid.Row="1"
+            Margin="16,4,16,8"
+            FontSize="13"
+            Text="{Binding TotalCountText}"
+            TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+
+        <!-- Terméklista: virtualizált CollectionView, lapozott betöltéssel -->
+        <RefreshView
+            Grid.Row="2"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView
+                ItemSizingStrategy="MeasureFirstItem"
+                ItemsSource="{Binding Products}"
+                RemainingItemsThreshold="15"
+                RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                SelectionMode="None">
+
+                <!-- Üres lista -->
+                <CollectionView.EmptyView>
+                    <Label
+                        Margin="32"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding EmptyMessage}"
+                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Product">
+                        <Grid
+                            Padding="16,10"
+                            ColumnDefinitions="*,Auto"
+                            ColumnSpacing="12"
+                            RowDefinitions="Auto,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectProductCommand, Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, x:DataType=vm:ProductListViewModel}" CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+
+                            <!-- Elfogyott termék: piros háttér -->
+                            <Grid.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsOutOfStock}"
+                                    TargetType="Grid"
+                                    Value="True">
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource OutOfStockBackgroundLight}, Dark={StaticResource OutOfStockBackgroundDark}}" />
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <!-- Név -->
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding Name}" />
+
+                            <!-- Vonalkód -->
+                            <Label
+                                Grid.Row="1"
+                                FontSize="13"
+                                Text="{Binding Barcode}"
+                                TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+
+                            <!-- Ár -->
+                            <Label
+                                Grid.Column="1"
+                                FontSize="15"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding Price, StringFormat='{0:N2}'}" />
+
+                            <!-- Készlet; elfogyott esetén piros "Out of stock" (Elfogyott) -->
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                FontSize="13"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding Quantity, StringFormat='Stock: {0:0.###}'}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding IsOutOfStock}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="Text" Value="Out of stock" />
+                                        <Setter Property="FontAttributes" Value="Bold" />
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OutOfStockLight}, Dark={StaticResource OutOfStockDark}}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <!-- Elválasztó vonal -->
+                            <BoxView
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="-16,0,-16,-10"
+                                HeightRequest="1"
+                                VerticalOptions="End"
+                                Color="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Lista alja: további elemek töltése jelző -->
+                <CollectionView.Footer>
+                    <ActivityIndicator
+                        Margin="12"
+                        HeightRequest="24"
+                        IsRunning="{Binding IsLoadingMore}"
+                        IsVisible="{Binding IsLoadingMore}" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
